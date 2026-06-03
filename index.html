@@ -174,6 +174,125 @@
   .h-delete { width: 22px; height: 22px; background: #E53E3E; top: -11px; right: -11px; cursor: pointer; color: white; font-size: 14px; line-height: 18px; text-align: center; font-weight: bold; }
   #canvas.drag-over { box-shadow: inset 0 0 0 4px #FF6B9D, 0 4px 20px rgba(0,0,0,0.08); }
 
+  /* ===== 편집 안내바 ===== */
+  .edit-guide-bar {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.92); border: 1.5px solid #EDF2F7;
+    border-radius: 14px; padding: 10px 20px; margin-top: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    max-width: 940px; margin-left: auto; margin-right: auto;
+    white-space: nowrap; overflow-x: auto;
+  }
+  .edit-guide-bar .guide-label {
+    font-size: 11px; color: #718096; margin-right: 6px; flex-shrink: 0;
+  }
+  .guide-item {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 600; flex-shrink: 0;
+  }
+  .guide-dot {
+    width: 18px; height: 18px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 10px; color: white; font-weight: 700;
+    border: 2px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    flex-shrink: 0;
+  }
+  .guide-dot.pink { background: #FF6B9D; }
+  .guide-dot.blue { background: #4299E1; }
+  .guide-dot.purple { background: #9F7AEA; }
+  .guide-dot.red { background: #E53E3E; }
+  .guide-divider { width: 1px; height: 18px; background: #E2E8F0; }
+
+  /* ===== 저장 완료 모달 ===== */
+  .save-modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4); z-index: 9999;
+    align-items: center; justify-content: center;
+  }
+  .save-modal-overlay.active { display: flex; }
+  .save-modal {
+    background: white; border-radius: 24px; padding: 36px 28px;
+    text-align: center; max-width: 340px; width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    animation: modalPop 0.3s ease;
+  }
+  @keyframes modalPop { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .save-modal .modal-emoji { font-size: 52px; margin-bottom: 12px; }
+  .save-modal h3 { font-size: 20px; font-weight: 700; color: #2D3748; margin-bottom: 8px; }
+  .save-modal p { font-size: 14px; color: #718096; margin-bottom: 24px; line-height: 1.6; }
+  .modal-thumb { width: 100%; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  .modal-actions { display: flex; flex-direction: column; gap: 10px; }
+  .modal-btn {
+    padding: 13px; border-radius: 12px; border: none; cursor: pointer;
+    font-size: 14px; font-weight: 600; font-family: inherit; transition: all 0.15s;
+  }
+  .modal-btn.primary { background: #FF6B9D; color: white; }
+  .modal-btn.primary:hover { background: #E14E83; }
+  .modal-btn.secondary { background: #EDF2F7; color: #4A5568; }
+  .modal-btn.secondary:hover { background: #E2E8F0; }
+
+  /* ===== 갤러리 화면 ===== */
+  .gallery-screen { display: none; min-height: 100vh; background: #FFF9F0; padding: 20px; }
+  .gallery-screen.active { display: block; }
+  .gallery-header { max-width: 900px; margin: 0 auto 24px; display: flex; align-items: center; gap: 16px; }
+  .gallery-title { font-size: 22px; font-weight: 700; color: #2D3748; margin-right: auto; }
+  .gallery-grid {
+    max-width: 900px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .gallery-card {
+    background: white; border-radius: 16px; overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07); transition: transform 0.2s;
+  }
+  .gallery-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+  .gallery-card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+  .gallery-card-info { padding: 10px 14px 14px; }
+  .gallery-card-date { font-size: 11px; color: #A0AEC0; margin-bottom: 8px; }
+  .gallery-card-actions { display: flex; gap: 8px; }
+  .gallery-card-btn {
+    flex: 1; padding: 7px; border-radius: 8px; border: 1.5px solid #E2E8F0;
+    background: white; cursor: pointer; font-size: 12px; font-weight: 500;
+    font-family: inherit; color: #4A5568; transition: all 0.15s;
+  }
+  .gallery-card-btn:hover { border-color: #FF6B9D; color: #FF6B9D; }
+  .gallery-card-btn.dl { background: #FF6B9D; color: white; border-color: #FF6B9D; }
+  .gallery-card-btn.dl:hover { background: #E14E83; }
+
+  /* ===== 라이트박스 ===== */
+  .lightbox-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85); z-index: 99999;
+    align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .lightbox-overlay.active { display: flex; }
+  .lightbox-inner {
+    position: relative; max-width: 860px; width: 100%;
+    animation: modalPop 0.25s ease;
+  }
+  .lightbox-inner img {
+    width: 100%; border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    display: block;
+  }
+  .lightbox-close {
+    position: absolute; top: -14px; right: -14px;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: white; border: none; cursor: pointer;
+    font-size: 18px; line-height: 36px; text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    color: #4A5568; font-weight: 700;
+  }
+  .lightbox-close:hover { background: #FF6B9D; color: white; }
+  .gallery-card img { cursor: zoom-in; }
+  .gallery-empty {
+    max-width: 900px; margin: 60px auto; text-align: center;
+    color: #A0AEC0; font-size: 16px; line-height: 2;
+  }
+  .gallery-empty .empty-emoji { font-size: 52px; display: block; margin-bottom: 12px; }
+
   /* ===== 토스트 ===== */
   .toast {
     position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
@@ -234,22 +353,15 @@
   <div class="editor-header">
     <button class="back-btn" onclick="goHome()">← 처음으로</button>
     <h2 class="editor-title">내 정원 꾸미기</h2>
+    <span style="font-size:13px; color:#A0AEC0; margin-right: auto;">스티커를 드래그하여 공간에 놓아 꾸며주세요.</span>
   </div>
   <div class="editor-layout">
     <div class="sticker-panel">
       <div class="panel-title">🎨 내 그림 스티커</div>
       <div class="sticker-list" id="sticker-list"></div>
-      <div class="panel-hint">
-        스티커를 드래그해서 정원에 놓아보세요.<br>
-        <strong style="color:#FF6B9D">분홍</strong> 크기 ·
-        <strong style="color:#4299E1">파랑</strong> 회전 ·
-        <strong style="color:#9F7AEA">보라</strong> 좌우반전 ·
-        <strong style="color:#E53E3E">×</strong> 삭제
-      </div>
     </div>
     <div class="canvas-area">
       <div class="canvas-toolbar">
-        <span class="tool-hint">💡 스티커를 클릭하면 도구가 나타나요</span>
         <button class="tool-btn primary" onclick="clearCanvas()">🗑 모두 지우기</button>
         <button class="tool-btn save" onclick="saveGarden()">💾 내 정원 저장하기</button>
       </div>
@@ -261,6 +373,60 @@
         <div id="placed-container"></div>
       </div>
     </div>
+    <!-- 편집 안내바 -->
+    <div class="edit-guide-bar">
+      <span class="guide-label">📌 스티커 클릭 후 편집:</span>
+      <div class="guide-item">
+        <div class="guide-dot pink">↔</div>
+        <span style="color:#FF6B9D">크기 조절</span>
+      </div>
+      <div class="guide-divider"></div>
+      <div class="guide-item">
+        <div class="guide-dot blue">↻</div>
+        <span style="color:#4299E1">회전</span>
+      </div>
+      <div class="guide-divider"></div>
+      <div class="guide-item">
+        <div class="guide-dot purple">⇄</div>
+        <span style="color:#9F7AEA">좌우 반전</span>
+      </div>
+      <div class="guide-divider"></div>
+      <div class="guide-item">
+        <div class="guide-dot red">×</div>
+        <span style="color:#E53E3E">삭제</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 저장 완료 모달 -->
+<div class="save-modal-overlay" id="save-modal-overlay">
+  <div class="save-modal">
+    <div class="modal-emoji">🌿</div>
+    <h3>내 정원이 완성됐어요!</h3>
+    <p>작품이 저장됐어요.<br>나의 정원 갤러리에서 확인해보세요.</p>
+    <img id="modal-thumb" class="modal-thumb" src="" alt="정원 미리보기">
+    <div class="modal-actions">
+      <button class="modal-btn primary" onclick="openGallery()">🌸 나의 정원 갤러리 보기</button>
+      <button class="modal-btn secondary" onclick="closeSaveModal()">계속 꾸미기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 나의 정원 갤러리 -->
+<div class="gallery-screen" id="gallery-screen">
+  <div class="gallery-header">
+    <button class="back-btn" onclick="closeGallery()">← 꾸미기로 돌아가기</button>
+    <h2 class="gallery-title">🌸 나의 정원 갤러리</h2>
+  </div>
+  <div id="gallery-content"></div>
+</div>
+
+<!-- 라이트박스 -->
+<div class="lightbox-overlay" id="lightbox-overlay" onclick="closeLightbox(event)">
+  <div class="lightbox-inner">
+    <button class="lightbox-close" onclick="closeLightbox()">×</button>
+    <img id="lightbox-img" src="" alt="정원 크게 보기">
   </div>
 </div>
 
@@ -974,27 +1140,34 @@ function clearCanvas() {
   }
 }
 
-// ===== 정원 저장 — PNG 다운로드 =====
+// ===== 정원 저장 — PNG + 갤러리 =====
+let savedGardens = JSON.parse(localStorage.getItem('artbonbon_gardens') || '[]');
+
 async function saveGarden() {
   if (placedContainer.children.length === 0) {
     showToast('스티커를 먼저 놓아주세요!');
     return;
   }
 
-  // 핸들 숨기기
   const handles = document.querySelectorAll('.handle');
   handles.forEach(h => h.style.display = 'none');
   document.querySelectorAll('.placed').forEach(p => p.classList.remove('selected'));
 
   try {
     const pngDataUrl = await captureCanvasToImage();
-    // 다운로드
-    const link = document.createElement('a');
-    const timestamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
-    link.download = `내정원_${timestamp}.png`;
-    link.href = pngDataUrl;
-    link.click();
-    showToast('🎉 내 정원이 저장됐어요!');
+
+    // 갤러리에 저장
+    const entry = {
+      id: Date.now(),
+      dataUrl: pngDataUrl,
+      date: new Date().toLocaleString('ko-KR', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' })
+    };
+    savedGardens.unshift(entry);
+    try { localStorage.setItem('artbonbon_gardens', JSON.stringify(savedGardens)); } catch(e) {}
+
+    // 저장 완료 모달
+    document.getElementById('modal-thumb').src = pngDataUrl;
+    document.getElementById('save-modal-overlay').classList.add('active');
   } catch (err) {
     console.error(err);
     showToast('저장 중 오류가 발생했어요');
@@ -1002,6 +1175,77 @@ async function saveGarden() {
     handles.forEach(h => h.style.display = '');
   }
 }
+
+function closeSaveModal() {
+  document.getElementById('save-modal-overlay').classList.remove('active');
+}
+
+function openGallery() {
+  closeSaveModal();
+  document.getElementById('editor-screen').classList.remove('active');
+  const screen = document.getElementById('gallery-screen');
+  screen.classList.add('active');
+  renderGallery();
+}
+
+function closeGallery() {
+  document.getElementById('gallery-screen').classList.remove('active');
+  document.getElementById('editor-screen').classList.add('active');
+}
+
+function renderGallery() {
+  const container = document.getElementById('gallery-content');
+  if (savedGardens.length === 0) {
+    container.innerHTML = `<div class="gallery-empty"><span class="empty-emoji">🌱</span>아직 저장된 정원이 없어요.<br>정원을 꾸미고 저장해보세요!</div>`;
+    return;
+  }
+  container.innerHTML = `<div class="gallery-grid">${savedGardens.map((g, i) => `
+    <div class="gallery-card" id="gcard-${g.id}">
+      <img src="${g.dataUrl}" alt="정원 ${i+1}" onclick="openLightbox('${g.id}')">
+      <div class="gallery-card-info">
+        <div class="gallery-card-date">🌿 ${g.date}</div>
+        <div class="gallery-card-actions">
+          <button class="gallery-card-btn dl" onclick="downloadGarden(${g.id})">💾 다운로드</button>
+          <button class="gallery-card-btn" onclick="deleteGarden(${g.id})">🗑 삭제</button>
+        </div>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function downloadGarden(id) {
+  const g = savedGardens.find(x => x.id === id);
+  if (!g) return;
+  const link = document.createElement('a');
+  link.download = `내정원_${g.date.replace(/[\s:]/g, '-')}.png`;
+  link.href = g.dataUrl;
+  link.click();
+}
+
+function deleteGarden(id) {
+  if (!confirm('이 정원을 삭제할까요?')) return;
+  savedGardens = savedGardens.filter(x => x.id !== id);
+  try { localStorage.setItem('artbonbon_gardens', JSON.stringify(savedGardens)); } catch(e) {}
+  renderGallery();
+}
+
+function openLightbox(id) {
+  const g = savedGardens.find(x => String(x.id) === String(id));
+  if (!g) return;
+  document.getElementById('lightbox-img').src = g.dataUrl;
+  document.getElementById('lightbox-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(e) {
+  if (e && e.target !== document.getElementById('lightbox-overlay') && !e.target.classList.contains('lightbox-close')) return;
+  document.getElementById('lightbox-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// ESC 키로 라이트박스 닫기
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox({ target: document.getElementById('lightbox-overlay') });
+});
 
 async function captureCanvasToImage() {
   const cv = document.getElementById('canvas');
