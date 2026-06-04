@@ -111,9 +111,9 @@
   .preview-actions { display: flex; gap: 10px; justify-content: center; }
 
   /* ===== 꾸미기 ===== */
-  .editor-screen { display: none; min-height: 100vh; background: #FFF9F0; padding: 20px; }
-  .editor-screen.active { display: block; }
-  .editor-header { max-width: 1200px; margin: 0 auto 16px; display: flex; align-items: center; gap: 16px; }
+  .editor-screen { display: none; height: 100dvh; overflow: hidden; background: #FFF9F0; padding: 10px 16px; box-sizing: border-box; }
+  .editor-screen.active { display: flex; flex-direction: column; }
+  .editor-header { width: 100%; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
   .back-btn {
     background: white; border: 1.5px solid #E2E8F0; padding: 8px 16px;
     border-radius: 10px; cursor: pointer; font-size: 14px;
@@ -121,8 +121,8 @@
   }
   .back-btn:hover { border-color: #FF6B9D; color: #FF6B9D; }
   .editor-title { font-size: 22px; font-weight: 700; color: #2D3748; margin-right: auto; }
-  .editor-layout { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 240px 1fr; gap: 20px; }
-  .sticker-panel { background: white; border-radius: 16px; padding: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); max-height: 80vh; overflow-y: auto; }
+  .editor-layout { flex: 1; min-height: 0; display: grid; grid-template-columns: 200px 1fr; gap: 12px; overflow: hidden; }
+  .sticker-panel { background: white; border-radius: 16px; padding: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow-y: auto; display: flex; flex-direction: column; }
   .panel-title { font-size: 13px; color: #4A5568; font-weight: 700; margin-bottom: 12px; }
   .sticker-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .sticker-item {
@@ -133,8 +133,8 @@
   .sticker-item:hover { border-color: #FF6B9D; transform: translateY(-2px); }
   .sticker-item img { max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: none; }
   .panel-hint { font-size: 11px; color: #A0AEC0; margin-top: 14px; line-height: 1.5; background: #F7FAFC; padding: 10px; border-radius: 8px; }
-  .canvas-area { position: relative; }
-  .canvas-toolbar { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; flex-wrap: wrap; }
+  .canvas-area { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+  .canvas-toolbar { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; flex-wrap: wrap; flex-shrink: 0; }
   .tool-hint { font-size: 12px; color: #718096; margin-right: auto; }
   .tool-btn {
     background: white; border: 1.5px solid #E2E8F0; padding: 8px 16px;
@@ -147,8 +147,8 @@
   .tool-btn.save { background: #48BB78; color: white; border-color: #48BB78; }
   .tool-btn.save:hover { background: #38A169; }
   #canvas {
-    position: relative; width: 100%; max-width: 940px; margin: 0 auto;
-    aspect-ratio: 4 / 3;
+    position: relative; width: 100%;
+    flex: 1; min-height: 0;
     border-radius: 16px; overflow: hidden;
     background-color: #FFF9F0;
     background-size: 100% 100%; background-position: center;
@@ -374,7 +374,7 @@
   <div class="editor-header">
     <button class="back-btn" onclick="goHome()">← 처음으로</button>
     <h2 class="editor-title">내 정원 꾸미기</h2>
-    <span style="font-size:13px; color:#A0AEC0; margin-right: auto;">스티커를 드래그하여 공간에 놓아 꾸며주세요.</span>
+    <span style="font-size:13px; color:#A0AEC0; margin-right: auto;">스티커를 탭하거나 드래그해서 정원에 놓아보세요.</span>
   </div>
   <div class="editor-layout">
     <div class="sticker-panel">
@@ -939,6 +939,20 @@ function startEditing() {
     div.draggable = true;
     div.dataset.src = s.src;
     div.innerHTML = `<img src="${s.src}" draggable="false" alt="${s.key}"/>`;
+    // 마우스/터치 모두: 클릭하면 정원 중앙에 배치
+    div.addEventListener('click', () => {
+      const rect = placedContainer.getBoundingClientRect();
+      const cx = placedContainer.offsetWidth / 2 - 65;
+      const cy = placedContainer.offsetHeight / 2 - 65;
+      addPlaced(s.src, cx, cy);
+    });
+    div.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      const rect = placedContainer.getBoundingClientRect();
+      const cx = placedContainer.offsetWidth / 2 - 65;
+      const cy = placedContainer.offsetHeight / 2 - 65;
+      addPlaced(s.src, cx, cy);
+    }, { passive: false });
     div.addEventListener('dragstart', e => {
       e.dataTransfer.setData('src', s.src);
       e.dataTransfer.effectAllowed = 'copy';
@@ -1027,6 +1041,7 @@ function addPlaced(src, x, y) {
     el.appendChild(img);
 
     el.addEventListener('mousedown', startDrag);
+    el.addEventListener('touchstart', startDrag, { passive: false });
     placedContainer.appendChild(el);
     selectPlaced(el);
   };
@@ -1054,18 +1069,26 @@ function startDrag(e) {
   e.preventDefault(); e.stopPropagation();
   selectPlaced(this);
   const el = this;
-  const sx = e.clientX, sy = e.clientY;
+  // 터치/마우스 모두 지원
+  const startX = e.touches ? e.touches[0].clientX : e.clientX;
+  const startY = e.touches ? e.touches[0].clientY : e.clientY;
   const ol = parseFloat(el.style.left), ot = parseFloat(el.style.top);
   function mv(ev) {
-    el.style.left = (ol + ev.clientX - sx) + 'px';
-    el.style.top = (ot + ev.clientY - sy) + 'px';
+    const cx = ev.touches ? ev.touches[0].clientX : ev.clientX;
+    const cy = ev.touches ? ev.touches[0].clientY : ev.clientY;
+    el.style.left = (ol + cx - startX) + 'px';
+    el.style.top  = (ot + cy - startY) + 'px';
   }
   function up() {
     document.removeEventListener('mousemove', mv);
     document.removeEventListener('mouseup', up);
+    document.removeEventListener('touchmove', mv);
+    document.removeEventListener('touchend', up);
   }
   document.addEventListener('mousemove', mv);
   document.addEventListener('mouseup', up);
+  document.addEventListener('touchmove', mv, { passive: false });
+  document.addEventListener('touchend', up);
 }
 
 function selectPlaced(el) {
