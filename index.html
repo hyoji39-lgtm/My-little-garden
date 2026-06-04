@@ -111,9 +111,9 @@
   .preview-actions { display: flex; gap: 10px; justify-content: center; }
 
   /* ===== 꾸미기 ===== */
-  .editor-screen { display: none; height: 100dvh; overflow: hidden; background: #FFF9F0; padding: 10px 14px; box-sizing: border-box; }
-  .editor-screen.active { display: flex; flex-direction: column; }
-  .editor-header { width: 100%; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  .editor-screen { display: none; }
+  .editor-screen.active { display: grid; grid-template-rows: auto 1fr auto; height: 100dvh; overflow: hidden; background: #FFF9F0; padding: 10px 14px; box-sizing: border-box; gap: 8px; }
+  .editor-header { display: flex; align-items: center; gap: 12px; }
   .back-btn {
     background: white; border: 1.5px solid #E2E8F0; padding: 8px 16px;
     border-radius: 10px; cursor: pointer; font-size: 14px;
@@ -121,10 +121,10 @@
   }
   .back-btn:hover { border-color: #FF6B9D; color: #FF6B9D; }
   .editor-title { font-size: 22px; font-weight: 700; color: #2D3748; margin-right: auto; }
-  .editor-layout { flex: 1; min-height: 0; display: grid; grid-template-columns: 150px 1fr; gap: 10px; overflow: hidden; }
-  .sticker-panel { background: white; border-radius: 14px; padding: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow-y: auto; display: flex; flex-direction: column; }
+  .editor-layout { display: grid; grid-template-columns: 150px 1fr; gap: 10px; min-height: 0; overflow: hidden; }
+  .sticker-panel { background: white; border-radius: 14px; padding: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); display: flex; flex-direction: column; overflow: hidden; }
   .panel-title { font-size: 13px; color: #4A5568; font-weight: 700; margin-bottom: 12px; }
-  .sticker-list { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+  .sticker-list { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; overflow-y: auto; flex: 1; align-content: start; }
   .sticker-item {
     background: #FAFAF7; border: 2px solid transparent; border-radius: 10px;
     padding: 4px; cursor: pointer; text-align: center; transition: all 0.15s;
@@ -134,8 +134,8 @@
   .sticker-item:hover { border-color: #FF6B9D; transform: translateY(-2px); }
   .sticker-item img { max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: none; }
   .panel-hint { font-size: 11px; color: #A0AEC0; margin-top: 14px; line-height: 1.5; background: #F7FAFC; padding: 10px; border-radius: 8px; }
-  .canvas-area { display: flex; flex-direction: column; align-items: center; min-height: 0; overflow: hidden; }
-  .canvas-toolbar { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; flex-wrap: wrap; flex-shrink: 0; width: 100%; }
+  .canvas-area { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 0; overflow: hidden; }
+  .canvas-toolbar { display: flex; gap: 8px; margin-bottom: 6px; align-items: center; flex-wrap: nowrap; flex-shrink: 0; width: 100%; }
   .tool-hint { font-size: 12px; color: #718096; margin-right: auto; }
   .tool-btn {
     background: white; border: 1.5px solid #E2E8F0; padding: 8px 16px;
@@ -149,14 +149,14 @@
   .tool-btn.save:hover { background: #38A169; }
   #canvas {
     position: relative;
-    min-height: 0;
-    height: 100%;
+    max-height: 100%;
     aspect-ratio: 4 / 3;
     width: auto;
     max-width: 100%;
     border-radius: 16px; overflow: hidden;
     background-color: #FFF9F0;
-    background-size: 100% 100%; background-position: center;
+    background-size: cover;
+    background-position: center;
     background-repeat: no-repeat;
     box-shadow: 0 4px 20px rgba(0,0,0,0.08); user-select: none;
   }
@@ -181,10 +181,10 @@
 
   /* ===== 편집 안내바 ===== */
   .edit-guide-bar {
-    display: flex; align-items: center; justify-content: center;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     gap: 8px;
     background: rgba(255,255,255,0.92); border: 1.5px solid #EDF2F7;
-    border-radius: 14px; padding: 10px 20px; margin-top: 10px;
+    border-radius: 14px; padding: 8px 16px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     max-width: 940px; margin-left: auto; margin-right: auto;
     white-space: nowrap; overflow-x: auto;
@@ -378,28 +378,29 @@
         <div id="placed-container"></div>
       </div>
     </div>
-    <!-- 편집 안내바 -->
-    <div class="edit-guide-bar">
-      <span class="guide-label">📌 스티커 클릭 후 편집:</span>
-      <div class="guide-item">
-        <div class="guide-dot pink">↔</div>
-        <span style="color:#FF6B9D">크기 조절</span>
-      </div>
-      <div class="guide-divider"></div>
-      <div class="guide-item">
-        <div class="guide-dot blue">↻</div>
-        <span style="color:#4299E1">회전</span>
-      </div>
-      <div class="guide-divider"></div>
-      <div class="guide-item">
-        <div class="guide-dot purple">⇄</div>
-        <span style="color:#9F7AEA">좌우 반전</span>
-      </div>
-      <div class="guide-divider"></div>
-      <div class="guide-item">
-        <div class="guide-dot red">×</div>
-        <span style="color:#E53E3E">삭제</span>
-      </div>
+
+  </div>
+<!-- 편집 안내바 -->
+  <div class="edit-guide-bar">
+    <span class="guide-label">📌 스티커 클릭 후 편집:</span>
+    <div class="guide-item">
+    <div class="guide-dot pink">↔</div>
+    <span style="color:#FF6B9D">크기 조절</span>
+    </div>
+    <div class="guide-divider"></div>
+    <div class="guide-item">
+    <div class="guide-dot blue">↻</div>
+    <span style="color:#4299E1">회전</span>
+    </div>
+    <div class="guide-divider"></div>
+    <div class="guide-item">
+    <div class="guide-dot purple">⇄</div>
+    <span style="color:#9F7AEA">좌우 반전</span>
+    </div>
+    <div class="guide-divider"></div>
+    <div class="guide-item">
+    <div class="guide-dot red">×</div>
+    <span style="color:#E53E3E">삭제</span>
     </div>
   </div>
 </div>
