@@ -122,16 +122,17 @@
   .back-btn:hover { border-color: #FF6B9D; color: #FF6B9D; }
   .editor-title { font-size: 22px; font-weight: 700; color: #2D3748; margin-right: auto; }
   .editor-layout { display: grid; grid-template-columns: 150px 1fr; gap: 10px; min-height: 0; overflow: hidden; height: 100%; }
-  .sticker-panel { background: white; border-radius: 14px; padding: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); display: flex; flex-direction: column; overflow: hidden; height: 100%; }
+  .sticker-panel { background: white; border-radius: 14px; padding: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); display: flex; flex-direction: column; overflow: hidden; height: 100%; min-width: 0; }
   .panel-title { font-size: 13px; color: #4A5568; font-weight: 700; margin-bottom: 12px; }
-  .sticker-list { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; overflow-y: auto; flex: 1; align-content: start; }
+  .sticker-list { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; overflow-y: auto; overflow-x: hidden; flex: 1; align-content: start; min-width: 0; }
   .sticker-item {
-    background: #FAFAF7; border: 2px solid transparent; border-radius: 12px;
-    padding: 8px; cursor: grab; text-align: center; transition: all 0.15s;
+    background: #FAFAF7; border: 2px solid transparent; border-radius: 10px;
+    padding: 4px; cursor: pointer; text-align: center; transition: all 0.15s;
     aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    min-width: 0; overflow: hidden; width: 100%;
   }
   .sticker-item:hover { border-color: #FF6B9D; transform: translateY(-2px); }
-  .sticker-item img { max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: none; }
+  .sticker-item img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; display: block; }
   .panel-hint { font-size: 11px; color: #A0AEC0; margin-top: 14px; line-height: 1.5; background: #F7FAFC; padding: 10px; border-radius: 8px; }
   .canvas-area { display: flex; flex-direction: column; align-items: stretch; min-height: 0; overflow: hidden; height: 100%; }
   .canvas-toolbar { display: flex; gap: 8px; margin-bottom: 6px; align-items: center; flex-wrap: nowrap; flex-shrink: 0; width: 100%; }
@@ -231,11 +232,19 @@
   }
   .name-input:focus { border-color: #48BB78; }
   .name-submit-btn {
-    width: 100%; margin-top: 14px; padding: 14px;
+    flex: 1; padding: 14px;
     background: #48BB78; color: white; border: none;
-    border-radius: 14px; font-size: 16px; font-weight: 700;
+    border-radius: 14px; font-size: 15px; font-weight: 700;
     font-family: inherit; cursor: pointer;
   }
+  .name-cancel-btn {
+    flex: 1; padding: 14px;
+    background: white; color: #718096;
+    border: 2px solid #E2E8F0;
+    border-radius: 14px; font-size: 15px; font-weight: 700;
+    font-family: inherit; cursor: pointer;
+  }
+  .name-cancel-btn:hover { border-color: #A0AEC0; color: #4A5568; }
 
   /* ===== 저장 완료 모달 ===== */
   .save-modal-overlay {
@@ -450,7 +459,10 @@
     <h3>정원 작품을 저장할게요!</h3>
     <p>이름을 입력하면<br>선생님이 누구의 작품인지 알 수 있어요.</p>
     <input class="name-input" id="student-name-input" type="text" placeholder="이름을 입력해 주세요" maxlength="10">
-    <button class="name-submit-btn" onclick="submitNameAndSave()">💾 저장하기</button>
+    <div style="display:flex; gap:10px; margin-top:14px;">
+      <button class="name-cancel-btn" onclick="document.getElementById('name-modal-overlay').classList.remove('active')">✏️ 다시 수정하기</button>
+      <button class="name-submit-btn" onclick="submitNameAndSave()">💾 저장하기</button>
+    </div>
   </div>
 </div>
 
