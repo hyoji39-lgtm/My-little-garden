@@ -305,6 +305,27 @@
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
 </style>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyCYCsrByMA-89BncHFCpAlQ9hjvSh5DF8Y",
+    authDomain: "my-little-garden-6207e.firebaseapp.com",
+    projectId: "my-little-garden-6207e",
+    storageBucket: "my-little-garden-6207e.firebasestorage.app",
+    messagingSenderId: "749338971935",
+    appId: "1:749338971935:web:f6985a2cd38c30e6a3ea2a"
+  };
+  const app = initializeApp(firebaseConfig);
+  window.__db = getFirestore(app);
+  window.__fbCollection = collection;
+  window.__fbAddDoc = addDoc;
+  window.__fbTimestamp = serverTimestamp;
+  console.log('Firebase OK (Firestore only)');
+</script>
+
 </head>
 <body>
 
@@ -1164,6 +1185,43 @@ async function saveGarden() {
     };
     savedGardens.unshift(entry);
     try { localStorage.setItem('artbonbon_gardens', JSON.stringify(savedGardens)); } catch(e) {}
+
+    // Firebase Firestore 저장 (Storage 없이 base64 직접 저장)
+    try {
+      if (window.__db) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const teacherId = urlParams.get('teacher') || 'unknown';
+        const classCode = urlParams.get('class') || 'unknown';
+
+        // 이미지 크기 줄이기 (Firestore 1MB 제한)
+        const canvas2 = document.createElement('canvas');
+        canvas2.width = 400;
+        canvas2.height = 300;
+        const ctx2 = canvas2.getContext('2d');
+        const img2 = new Image();
+        await new Promise(resolve => {
+          img2.onload = resolve;
+          img2.src = pngDataUrl;
+        });
+        ctx2.drawImage(img2, 0, 0, 400, 300);
+        const smallImg = canvas2.toDataURL('image/jpeg', 0.6);
+
+        await window.__fbAddDoc(
+          window.__fbCollection(window.__db, 'gardens'),
+          {
+            id: String(entry.id),
+            name: '정원',
+            teacherId: teacherId,
+            classCode: classCode,
+            imgData: smallImg,
+            createdAt: window.__fbTimestamp()
+          }
+        );
+        console.log('Firebase 저장 완료');
+      }
+    } catch (fbErr) {
+      console.warn('Firebase 저장 실패 (로컬 저장은 완료):', fbErr);
+    }
 
     // 저장 완료 모달
     document.getElementById('modal-thumb').src = pngDataUrl;
