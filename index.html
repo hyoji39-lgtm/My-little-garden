@@ -936,14 +936,16 @@ function startEditing() {
     div.innerHTML = `<img src="${s.src}" draggable="false" alt="${s.key}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;"/>`;
     // 클릭/탭: 정원 중앙에 배치
     div.addEventListener('click', () => {
-      const cx = placedContainer.offsetWidth  / 2 - 65;
-      const cy = placedContainer.offsetHeight / 2 - 65;
+      const cvs = document.getElementById('canvas');
+      const cx = cvs.offsetWidth  / 2 - 65;
+      const cy = cvs.offsetHeight / 2 - 65;
       addPlaced(s.src, cx, cy);
     });
     div.addEventListener('touchend', (e) => {
       e.preventDefault();
-      const cx = placedContainer.offsetWidth  / 2 - 65;
-      const cy = placedContainer.offsetHeight / 2 - 65;
+      const cvs = document.getElementById('canvas');
+      const cx = cvs.offsetWidth  / 2 - 65;
+      const cy = cvs.offsetHeight / 2 - 65;
       addPlaced(s.src, cx, cy);
     }, { passive: false });
     div.addEventListener('dragstart', e => {
