@@ -998,9 +998,11 @@ function startEditing() {
   function applyCanvasSize(natW, natH) {
     const area = canvas.parentElement.getBoundingClientRect();
     const ratio = natH / natW;
-    let fitW = area.width;
-    let fitH = fitW * ratio;
-    if (fitH > area.height) { fitH = area.height; fitW = fitH / ratio; }
+    // 세로 기준: 가용 높이의 90%에 맞추고 가로는 비율로
+    let fitH = area.height * 0.9;
+    let fitW = fitH / ratio;
+    // 가로가 가용 너비 초과하면 가로 기준으로 재계산
+    if (fitW > area.width) { fitW = area.width; fitH = fitW * ratio; }
     canvas.style.width  = Math.floor(fitW) + 'px';
     canvas.style.height = Math.floor(fitH) + 'px';
     const pc = document.getElementById('placed-container');
