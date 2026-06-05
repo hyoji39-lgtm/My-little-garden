@@ -966,16 +966,9 @@ function startEditing() {
   const canvas = document.getElementById('canvas');
 
   function applyCanvasSize(natW, natH) {
-    const editorEl = document.getElementById('editor-screen');
-    const header  = editorEl.querySelector('.editor-header');
-    const toolbar = editorEl.querySelector('.canvas-toolbar');
-    const guide   = editorEl.querySelector('.edit-guide-bar');
-    const usedH = (header  ? header.getBoundingClientRect().height  : 0)
-                + (toolbar ? toolbar.getBoundingClientRect().height : 0)
-                + (guide   ? guide.getBoundingClientRect().height   : 0)
-                + 56; // gap + padding
-    // 세로를 가용 높이에 맞추고, 가로는 비율로 결정 (가로가 넘치면 가로 기준으로 재조정)
-    const maxH = window.innerHeight - usedH;
+    // 스티커 패널 높이에 맞춤
+    const stickerPanel = document.querySelector('.sticker-panel');
+    const maxH = stickerPanel ? stickerPanel.getBoundingClientRect().height : 400;
     const maxW = canvas.parentElement.getBoundingClientRect().width;
     const ratio = natH / natW;
     let fitH = maxH;
