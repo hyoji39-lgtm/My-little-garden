@@ -552,9 +552,11 @@ console.log('teacherId:', TEACHER_ID, 'classCode:', CLASS_CODE, 'mode:', VIEW_MO
 
 // mode=gallery면 바로 전체 갤러리 표시
 if (VIEW_MODE === 'gallery') {
-  document.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener('load', () => {
     // 홈화면 숨기고 갤러리 바로 열기
-    setTimeout(openClassGallery, 300);
+    document.getElementById('home-screen').style.display = 'none';
+    document.getElementById('home-screen').classList.remove('active');
+    openClassGallery();
   });
 }
 
