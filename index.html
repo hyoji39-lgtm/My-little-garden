@@ -962,38 +962,43 @@ function startEditing() {
     list.appendChild(div);
   });
 
-  // 캔버스 배경 설정 — 가용 높이에 맞춰 비율 유지
+  // 캔버스 배경 설정 — showScreen 이후 실제 렌더된 높이로 계산
   const canvas = document.getElementById('canvas');
-  const canvasArea = canvas.parentElement;
-  const toolbar = canvasArea.querySelector('.canvas-toolbar');
 
   function fitCanvas(natW, natH) {
+    const canvasArea = canvas.parentElement;
+    const toolbar = canvasArea.querySelector('.canvas-toolbar');
+    // editor-screen이 활성화된 뒤 실제 높이
     const areaH = canvasArea.clientHeight - (toolbar ? toolbar.offsetHeight + 6 : 0);
     const areaW = canvasArea.clientWidth;
     const ratio = natH / natW;
-    // 가용 높이 기준으로 width 계산, 가용 너비 초과하면 너비 기준
-    let fitW = Math.min(areaW, areaH / ratio);
-    let fitH = fitW * ratio;
+    const fitW = Math.min(areaW, areaH / ratio);
+    const fitH = fitW * ratio;
     canvas.style.width = fitW + 'px';
     canvas.style.height = fitH + 'px';
-    canvas.style.flexShrink = '0';
     const pc = document.getElementById('placed-container');
     if (pc) { pc.style.position = 'absolute'; pc.style.inset = '0'; }
   }
 
+  document.getElementById('placed-container').innerHTML = '';
+  document.getElementById('canvas-hint').style.display = '';
+
+  // 먼저 화면 전환 → 렌더 완료 후 크기 계산
+  showScreen('editor-screen');
+
   if (currentBg) {
     canvas.style.backgroundImage = `url(${currentBg})`;
     const bgImg = new Image();
-    bgImg.onload = () => fitCanvas(bgImg.naturalWidth, bgImg.naturalHeight);
+    bgImg.onload = () => {
+      const natW = bgImg.naturalWidth, natH = bgImg.naturalHeight;
+      // 두 프레임 대기해서 editor-screen 레이아웃 확정 후 계산
+      requestAnimationFrame(() => requestAnimationFrame(() => fitCanvas(natW, natH)));
+    };
     bgImg.src = currentBg;
   } else {
     canvas.style.backgroundImage = '';
-    fitCanvas(4, 3);
+    requestAnimationFrame(() => requestAnimationFrame(() => fitCanvas(4, 3)));
   }
-
-  document.getElementById('placed-container').innerHTML = '';
-  document.getElementById('canvas-hint').style.display = '';
-  showScreen('editor-screen');
 }
 
 const canvas = document.getElementById('canvas');
