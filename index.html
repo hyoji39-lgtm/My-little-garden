@@ -137,8 +137,8 @@
   .sticker-item:hover { border-color: #FF6B9D; transform: translateY(-2px); }
   .sticker-item img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; display: block; }
   .panel-hint { font-size: 11px; color: #A0AEC0; margin-top: 14px; line-height: 1.5; background: #F7FAFC; padding: 10px; border-radius: 8px; }
-  .canvas-area { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; min-height: 0; overflow: hidden; height: 100%; min-width: 0; width: 100%; }
-  .canvas-toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; flex-shrink: 0; width: 100%; }
+  .canvas-area { display: flex; flex-direction: column; min-height: 0; overflow: hidden; height: 100%; min-width: 0; width: 100%; }
+  .canvas-toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; flex-shrink: 0; width: 100%; margin-bottom: 6px; }
   .tool-hint { font-size: 12px; color: #718096; margin-right: auto; }
   .tool-btn {
     background: white; border: 1.5px solid #E2E8F0; padding: 8px 16px;
@@ -152,14 +152,14 @@
   .tool-btn.save:hover { background: #38A169; }
   #canvas {
     position: relative;
+    width: 100%;
     height: 100%;
-    width: auto;
     border-radius: 16px; overflow: hidden;
     background-color: #FFF9F0;
-    background-size: 100% 100%;
+    background-size: contain;
+    background-position: center;
     background-repeat: no-repeat;
     box-shadow: 0 4px 20px rgba(0,0,0,0.08); user-select: none;
-    flex-shrink: 0;
   }
   .canvas-hint { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); color: #4A5568; font-size: 16px; opacity: 0.7; pointer-events: none; text-align: center; line-height: 1.6; background: rgba(255,255,255,0.7); padding: 16px 24px; border-radius: 12px; }
   .placed { position: absolute; cursor: move; transform-origin: center center; }
@@ -967,8 +967,7 @@ function startEditing() {
   const canvas = document.getElementById('canvas');
 
   function applyCanvasSize(natW, natH) {
-    // CSS height:100%가 높이를 결정 — aspect-ratio만 설정
-    canvas.style.aspectRatio = natW + ' / ' + natH;
+    // background-size:contain 이므로 별도 처리 불필요
     const pc = document.getElementById('placed-container');
     if (pc) { pc.style.position = 'absolute'; pc.style.inset = '0'; }
   }
