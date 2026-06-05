@@ -125,14 +125,14 @@
     background: #FFF9F0; padding: 10px 14px;
     box-sizing: border-box; gap: 8px;
   }
-  .editor-header { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  .editor-header { display: flex; align-items: center; gap: 12px; flex-shrink: 0; flex-wrap: wrap; background: rgba(255,255,255,0.8); border-radius: 12px; padding: 8px 12px; position: relative; z-index: 10; }
   .back-btn {
     background: white; border: 1.5px solid #E2E8F0; padding: 8px 16px;
     border-radius: 10px; cursor: pointer; font-size: 14px;
     font-family: inherit; color: #4A5568; transition: all 0.15s;
   }
   .back-btn:hover { border-color: #FF6B9D; color: #FF6B9D; }
-  .editor-title { font-size: 22px; font-weight: 700; color: #2D3748; margin-right: auto; }
+  .editor-title { font-size: 18px; font-weight: 700; color: #2D3748; margin-right: auto; white-space: nowrap; }
   /* 툴바: 헤더 바로 아래 */
   .canvas-toolbar { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
   .tool-hint { font-size: 12px; color: #718096; margin-right: auto; }
