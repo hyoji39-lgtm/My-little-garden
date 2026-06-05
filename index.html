@@ -137,7 +137,7 @@
   .sticker-item:hover { border-color: #FF6B9D; transform: translateY(-2px); }
   .sticker-item img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; display: block; }
   .panel-hint { font-size: 11px; color: #A0AEC0; margin-top: 14px; line-height: 1.5; background: #F7FAFC; padding: 10px; border-radius: 8px; }
-  .canvas-area { display: flex; flex-direction: column; align-items: stretch; min-height: 0; overflow-y: auto; overflow-x: hidden; height: 100%; }
+  .canvas-area { display: flex; flex-direction: column; align-items: stretch; min-height: 0; overflow: hidden; height: 100%; }
   .canvas-toolbar { display: flex; gap: 8px; margin-bottom: 6px; align-items: center; flex-wrap: nowrap; flex-shrink: 0; width: 100%; }
   .tool-hint { font-size: 12px; color: #718096; margin-right: auto; }
   .tool-btn {
@@ -152,14 +152,13 @@
   .tool-btn.save:hover { background: #38A169; }
   #canvas {
     position: relative;
-    width: 100%; height: auto;
-    min-height: 200px;
+    width: 100%;
     border-radius: 16px; overflow: hidden;
     background-color: #FFF9F0;
     background-size: 100% 100%;
     background-repeat: no-repeat;
     box-shadow: 0 4px 20px rgba(0,0,0,0.08); user-select: none;
-    flex-shrink: 0;
+    flex: 1; min-height: 0;
   }
   .canvas-hint { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); color: #4A5568; font-size: 16px; opacity: 0.7; pointer-events: none; text-align: center; line-height: 1.6; background: rgba(255,255,255,0.7); padding: 16px 24px; border-radius: 12px; }
   .placed { position: absolute; cursor: move; transform-origin: center center; }
@@ -963,26 +962,33 @@ function startEditing() {
     list.appendChild(div);
   });
 
-  // 캔버스 배경 설정 — 배경 이미지의 종횡비에 맞춰 padding-top으로 높이 결정
+  // 캔버스 배경 설정 — 가용 높이에 맞춰 비율 유지
   const canvas = document.getElementById('canvas');
+  const canvasArea = canvas.parentElement;
+  const toolbar = canvasArea.querySelector('.canvas-toolbar');
+
+  function fitCanvas(natW, natH) {
+    const areaH = canvasArea.clientHeight - (toolbar ? toolbar.offsetHeight + 6 : 0);
+    const areaW = canvasArea.clientWidth;
+    const ratio = natH / natW;
+    // 가용 높이 기준으로 width 계산, 가용 너비 초과하면 너비 기준
+    let fitW = Math.min(areaW, areaH / ratio);
+    let fitH = fitW * ratio;
+    canvas.style.width = fitW + 'px';
+    canvas.style.height = fitH + 'px';
+    canvas.style.flexShrink = '0';
+    const pc = document.getElementById('placed-container');
+    if (pc) { pc.style.position = 'absolute'; pc.style.inset = '0'; }
+  }
+
   if (currentBg) {
     canvas.style.backgroundImage = `url(${currentBg})`;
     const bgImg = new Image();
-    bgImg.onload = () => {
-      const ratio = bgImg.naturalHeight / bgImg.naturalWidth;
-      canvas.style.paddingTop = (ratio * 100) + '%';
-      canvas.style.height = '0';
-      // placed-container도 absolute로 꽉 채우기
-      const pc = document.getElementById('placed-container');
-      if (pc) { pc.style.position = 'absolute'; pc.style.inset = '0'; }
-    };
+    bgImg.onload = () => fitCanvas(bgImg.naturalWidth, bgImg.naturalHeight);
     bgImg.src = currentBg;
   } else {
     canvas.style.backgroundImage = '';
-    canvas.style.paddingTop = '75%';  // 4:3
-    canvas.style.height = '0';
-    const pc = document.getElementById('placed-container');
-    if (pc) { pc.style.position = 'absolute'; pc.style.inset = '0'; }
+    fitCanvas(4, 3);
   }
 
   document.getElementById('placed-container').innerHTML = '';
