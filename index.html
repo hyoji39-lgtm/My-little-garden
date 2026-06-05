@@ -137,7 +137,7 @@
   .sticker-item:hover { border-color: #FF6B9D; transform: translateY(-2px); }
   .sticker-item img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; display: block; }
   .panel-hint { font-size: 11px; color: #A0AEC0; margin-top: 14px; line-height: 1.5; background: #F7FAFC; padding: 10px; border-radius: 8px; }
-  .canvas-area { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; min-height: 0; overflow: hidden; height: 100%; }
+  .canvas-area { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; min-height: 0; overflow: hidden; height: 100%; min-width: 0; }
   .canvas-toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; flex-shrink: 0; width: 100%; }
   .tool-hint { font-size: 12px; color: #718096; margin-right: auto; }
   .tool-btn {
@@ -966,21 +966,21 @@ function startEditing() {
   const canvas = document.getElementById('canvas');
 
   function applyCanvasSize(natW, natH) {
-    // editor-screen 전체 높이에서 헤더/툴바/가이드바/패딩 제외
     const editorEl = document.getElementById('editor-screen');
-    const header   = editorEl.querySelector('.editor-header');
-    const toolbar  = editorEl.querySelector('.canvas-toolbar');
-    const guide    = editorEl.querySelector('.edit-guide-bar');
+    const header  = editorEl.querySelector('.editor-header');
+    const toolbar = editorEl.querySelector('.canvas-toolbar');
+    const guide   = editorEl.querySelector('.edit-guide-bar');
     const usedH = (header  ? header.getBoundingClientRect().height  : 0)
                 + (toolbar ? toolbar.getBoundingClientRect().height : 0)
                 + (guide   ? guide.getBoundingClientRect().height   : 0)
-                + 60; // gap + padding 여유
+                + 56; // gap + padding
+    // 세로를 가용 높이에 맞추고, 가로는 비율로 결정 (가로가 넘치면 가로 기준으로 재조정)
     const maxH = window.innerHeight - usedH;
     const maxW = canvas.parentElement.getBoundingClientRect().width;
     const ratio = natH / natW;
-    let fitW = maxW;
-    let fitH = fitW * ratio;
-    if (fitH > maxH) { fitH = maxH; fitW = fitH / ratio; }
+    let fitH = maxH;
+    let fitW = fitH / ratio;
+    if (fitW > maxW) { fitW = maxW; fitH = fitW * ratio; }
     canvas.style.width  = Math.floor(fitW) + 'px';
     canvas.style.height = Math.floor(fitH) + 'px';
     const pc = document.getElementById('placed-container');
