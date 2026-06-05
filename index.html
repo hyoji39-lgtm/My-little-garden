@@ -124,7 +124,7 @@
   }
   .back-btn:hover { border-color: #FF6B9D; color: #FF6B9D; }
   .editor-title { font-size: 22px; font-weight: 700; color: #2D3748; margin-right: auto; }
-  .editor-layout { display: grid; grid-template-columns: 150px 1fr; gap: 10px; min-height: 0; overflow: hidden; height: 100%; align-items: start; }
+  .editor-layout { display: grid; grid-template-columns: 150px 1fr; gap: 10px; min-height: 0; overflow: hidden; height: 100%; }
   .sticker-panel { background: white; border-radius: 14px; padding: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); display: flex; flex-direction: column; overflow: hidden; height: 100%; min-width: 0; }
   .panel-title { font-size: 13px; color: #4A5568; font-weight: 700; margin-bottom: 12px; }
   .sticker-list { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; overflow-y: auto; overflow-x: hidden; flex: 1; align-content: start; min-width: 0; }
@@ -137,7 +137,7 @@
   .sticker-item:hover { border-color: #FF6B9D; transform: translateY(-2px); }
   .sticker-item img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; display: block; }
   .panel-hint { font-size: 11px; color: #A0AEC0; margin-top: 14px; line-height: 1.5; background: #F7FAFC; padding: 10px; border-radius: 8px; }
-  .canvas-area { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 0; overflow: hidden; height: 100%; gap: 6px; }
+  .canvas-area { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 0; overflow: hidden; height: 100%; }
   .canvas-toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; flex-shrink: 0; width: 100%; }
   .tool-hint { font-size: 12px; color: #718096; margin-right: auto; }
   .tool-btn {
@@ -152,14 +152,14 @@
   .tool-btn.save:hover { background: #38A169; }
   #canvas {
     position: relative;
-    width: 100%; max-width: 100%;
-    height: 0; /* padding-top으로 비율 지정 */
+    /* JS가 width/height를 px로 직접 지정 */
     border-radius: 16px; overflow: hidden;
     background-color: #FFF9F0;
     background-size: 100% 100%;
     background-repeat: no-repeat;
     box-shadow: 0 4px 20px rgba(0,0,0,0.08); user-select: none;
     flex-shrink: 0;
+    display: block;
   }
   .canvas-hint { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); color: #4A5568; font-size: 16px; opacity: 0.7; pointer-events: none; text-align: center; line-height: 1.6; background: rgba(255,255,255,0.7); padding: 16px 24px; border-radius: 12px; }
   .placed { position: absolute; cursor: move; transform-origin: center center; }
@@ -967,17 +967,22 @@ function startEditing() {
   const canvas = document.getElementById('canvas');
 
   function applyCanvasSize(natW, natH) {
-    // canvas-area 실제 높이 기준으로 canvas width 역산
     const canvasArea = canvas.parentElement;
     const toolbar = canvasArea.querySelector('.canvas-toolbar');
     const toolbarH = toolbar ? toolbar.getBoundingClientRect().height + 6 : 0;
     const areaH = canvasArea.getBoundingClientRect().height - toolbarH;
     const areaW = canvasArea.getBoundingClientRect().width;
     const ratio = natH / natW;
-    // 높이가 areaH를 넘지 않는 최대 너비
-    const fitW = Math.min(areaW, areaH / ratio);
-    canvas.style.width = fitW + 'px';
-    canvas.style.paddingTop = (fitW * ratio) + 'px';
+    // 가로·세로 둘 다 영역을 넘지 않는 최대 크기
+    let fitW = areaW;
+    let fitH = fitW * ratio;
+    if (fitH > areaH) {
+      fitH = areaH;
+      fitW = fitH / ratio;
+    }
+    canvas.style.width  = Math.floor(fitW) + 'px';
+    canvas.style.height = Math.floor(fitH) + 'px';
+    canvas.style.paddingTop = '0';
     const pc = document.getElementById('placed-container');
     if (pc) { pc.style.position = 'absolute'; pc.style.inset = '0'; }
   }
