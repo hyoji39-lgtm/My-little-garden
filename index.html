@@ -1018,13 +1018,28 @@ function startEditing() {
     const bgImg = new Image();
     bgImg.onload = () => {
       const natW = bgImg.naturalWidth, natH = bgImg.naturalHeight;
-      // editor-screen 렌더 완전히 끝난 후 실행
-      setTimeout(() => applyCanvasSize(natW, natH), 50);
+      function tryFit() {
+        const area = canvas.parentElement.getBoundingClientRect();
+        if (area.width > 0 && area.height > 0) {
+          applyCanvasSize(natW, natH);
+        } else {
+          setTimeout(tryFit, 50);
+        }
+      }
+      setTimeout(tryFit, 100);
     };
     bgImg.src = currentBg;
   } else {
     canvas.style.backgroundImage = '';
-    setTimeout(() => applyCanvasSize(4, 3), 50);
+    function tryFitDefault() {
+      const area = canvas.parentElement.getBoundingClientRect();
+      if (area.width > 0 && area.height > 0) {
+        applyCanvasSize(4, 3);
+      } else {
+        setTimeout(tryFitDefault, 50);
+      }
+    }
+    setTimeout(tryFitDefault, 100);
   }
 }
 
