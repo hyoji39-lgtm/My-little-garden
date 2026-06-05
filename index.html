@@ -88,14 +88,16 @@
     position: fixed; inset: 0;
     background: rgba(255,249,240,0.97);
     display: none; align-items: center; justify-content: center;
-    z-index: 999; backdrop-filter: blur(8px); padding: 20px;
+    z-index: 999; backdrop-filter: blur(8px); padding: 12px;
+    box-sizing: border-box;
   }
   .preview-screen.active { display: flex; }
   .preview-box {
-    background: white; border-radius: 20px; padding: 32px;
+    background: white; border-radius: 20px; padding: 24px 20px;
     max-width: 720px; width: 100%;
+    box-sizing: border-box;
     box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-    max-height: 90vh; overflow-y: auto;
+    max-height: 90vh; overflow-y: auto; overflow-x: hidden;
   }
   .preview-title { font-size: 22px; font-weight: 700; color: #2D3748; margin-bottom: 8px; text-align: center; }
   .preview-subtitle { font-size: 14px; color: #718096; margin-bottom: 20px; text-align: center; }
@@ -107,7 +109,8 @@
   .preview-item { background: white; border-radius: 10px; padding: 6px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; }
   .preview-item img { max-width: 100%; max-height: 100%; object-fit: contain; }
   .preview-bg-section { background: #FAFAF7; border-radius: 12px; padding: 8px; margin-bottom: 24px; }
-  .preview-bg-section img { width: 100%; max-width: 100%; height: auto; border-radius: 8px; display: block; object-fit: contain; }
+  .preview-bg-section { overflow: hidden; }
+  .preview-bg-section img { width: 100%; height: auto; max-width: 100%; border-radius: 8px; display: block; object-fit: contain; box-sizing: border-box; }
   .preview-actions { display: flex; gap: 10px; justify-content: center; }
 
   /* ===== 꾸미기 ===== */
@@ -835,79 +838,17 @@ async function extractStickers(img) {
     idx++;
   }
 
-  // 12. 배경 추출 — 유리온실만 정확히 (좌우 꽃 장식 제외)
-  // 정원 영역 시작 (안내 텍스트 아래)
-  const gardenStartY = boxBottom + Math.floor(H * 0.05);
-  const gardenH = H - gardenStartY;
-
-  // 검은 픽셀 마스크 (유리온실 선화)
-  const isDark = new Uint8Array(W * gardenH);
-  for (let y = 0; y < gardenH; y++) {
-    for (let x = 0; x < W; x++) {
-      const srcIdx = (gardenStartY + y) * W + x;
-      const r = px[srcIdx*4], g = px[srcIdx*4+1], b = px[srcIdx*4+2];
-      if ((r + g + b) / 3 < 120) isDark[y * W + x] = 1;
-    }
-  }
-
-  // 각 컬럼별 가장 긴 수직 검은 선 길이
-  const colMaxRuns = new Int32Array(W);
-  for (let x = 0; x < W; x++) {
-    let maxRun = 0, curRun = 0;
-    for (let y = 0; y < gardenH; y++) {
-      if (isDark[y * W + x]) {
-        curRun++;
-        if (curRun > maxRun) maxRun = curRun;
-      } else {
-        curRun = 0;
-      }
-    }
-    colMaxRuns[x] = maxRun;
-  }
-
-  // 50px 이상 수직선이 있는 컬럼이 유리온실 영역
-  let glassLeft = -1, glassRight = -1;
-  for (let x = 0; x < W; x++) {
-    if (colMaxRuns[x] >= 50) {
-      if (glassLeft === -1) glassLeft = x;
-      glassRight = x;
-    }
-  }
-  if (glassLeft === -1) {
-    // 못 찾으면 전체 사용
-    glassLeft = 0;
-    glassRight = W - 1;
-  }
-
-  // 유리온실 위쪽 경계 — 영역 내 검은 픽셀이 시작되는 행
-  let topYLocal = -1;
-  for (let y = 0; y < gardenH; y++) {
-    let count = 0;
-    for (let x = glassLeft; x <= glassRight; x++) {
-      if (isDark[y * W + x]) count++;
-    }
-    if (count > 3) {
-      topYLocal = y;
-      break;
-    }
-  }
-  const glassTop = topYLocal >= 0 ? gardenStartY + Math.max(0, topYLocal - 15) : gardenStartY;
-
-  // 최종 자르기 (좌우 10px 여백)
-  const bgMargin = 10;
-  const finalLeft = Math.max(0, glassLeft - bgMargin);
-  const finalRight = Math.min(W, glassRight + bgMargin);
-  const finalTop = glassTop;
-  const finalBottom = H;
-  const bgW = finalRight - finalLeft;
-  const bgH = finalBottom - finalTop;
+  // 12. 배경 추출 — 스티커 박스 아래부터 이미지 하단까지 전체 너비 사용
+  const gardenStartY = boxBottom + Math.floor(H * 0.03);
+  const bgW = W;
+  const bgH = H - gardenStartY;
 
   const bgCanvas = document.createElement('canvas');
   bgCanvas.width = bgW;
   bgCanvas.height = bgH;
   const bgCtx = bgCanvas.getContext('2d');
-  bgCtx.drawImage(canvas, finalLeft, finalTop, bgW, bgH, 0, 0, bgW, bgH);
-  const bgSrc = bgCanvas.toDataURL('image/jpeg', 0.85);
+  bgCtx.drawImage(canvas, 0, gardenStartY, bgW, bgH, 0, 0, bgW, bgH);
+  const bgSrc = bgCanvas.toDataURL('image/jpeg', 0.9);
 
   return { stickers, background: bgSrc };
 }
