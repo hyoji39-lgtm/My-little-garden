@@ -838,16 +838,29 @@ async function extractStickers(img) {
     idx++;
   }
 
-  // 12. 배경 추출 — 스티커 박스 아래부터 이미지 하단까지 전체 너비 사용
+  // 12. 배경 추출 — 정원 이미지 영역에서 설명 텍스트 제외하고 크롭
+  // 스티커 박스 하단 아래로 일정 간격 후 정원 이미지 시작
   const gardenStartY = boxBottom + Math.floor(H * 0.03);
-  const bgW = W;
-  const bgH = H - gardenStartY;
+  const gardenH = H - gardenStartY;
+
+  // 정원 이미지 내에서 상하좌우 여백 크롭 (설명글, 외곽 흰 여백 제거)
+  // 상단: 설명 텍스트 제거 위해 8% 추가 크롭
+  // 좌우: 흰 여백 3% 크롭
+  // 하단: 흰 여백 2% 크롭
+  const cropTop    = Math.floor(gardenH * 0.08);
+  const cropSide   = Math.floor(W * 0.03);
+  const cropBottom = Math.floor(gardenH * 0.02);
+
+  const finalX = cropSide;
+  const finalY = gardenStartY + cropTop;
+  const finalW = W - cropSide * 2;
+  const finalH = gardenH - cropTop - cropBottom;
 
   const bgCanvas = document.createElement('canvas');
-  bgCanvas.width = bgW;
-  bgCanvas.height = bgH;
+  bgCanvas.width = finalW;
+  bgCanvas.height = finalH;
   const bgCtx = bgCanvas.getContext('2d');
-  bgCtx.drawImage(canvas, 0, gardenStartY, bgW, bgH, 0, 0, bgW, bgH);
+  bgCtx.drawImage(canvas, finalX, finalY, finalW, finalH, 0, 0, finalW, finalH);
   const bgSrc = bgCanvas.toDataURL('image/jpeg', 0.9);
 
   return { stickers, background: bgSrc };
